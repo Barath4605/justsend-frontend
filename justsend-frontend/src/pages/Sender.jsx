@@ -10,35 +10,9 @@ import {useNavigate} from "react-router-dom";
 
 const Sender = () => {
 
-    async function handleSend() {
-        if (!text.trim()) {
-            toast.error("message is empty")
-            return
-        }
-
-        const res = await fetch("http://localhost:8080/send", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text }),
-        })
-
-        if (!res.ok) {
-            toast.error("failed to send")
-            return
-        }
-
-        const data = await res.json()
-        // data = { code, expiryAt }
-
-        toast.success("code generated")
-        setGenerated(data)
-        setMessageSent(true)
-    }
-
-
     const [text, setText] = React.useState("");
+    const [result, setResult] = React.useState(null);
+
     const[messageSent, setMessageSent] = React.useState(false);
     console.log(text);
 
@@ -48,12 +22,34 @@ const Sender = () => {
         const plain = text.replace(/<[^>]*>/g, "").trim()
         console.log(plain);
         if(plain === "") {
-            toast.error("Cannot send empty Message!");
             setMessageSent(false);
+            return false;
         } else {
             setMessageSent(true);
-            toast.success("Message stored successfully!");
+            return true;
         }
+    }
+
+    async function sendMessage() {
+
+        const validMessage = checkValidMessage();
+        if (!validMessage) {
+            toast.error("Cannot send empty Message!");
+            return;
+        }
+        toast.success("Message stored successfully!");
+
+        const res = await fetch("http://localhost:8080/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({text})
+        });
+
+        const data = await res.json()
+        setResult(data);
+        setMessageSent(true);
     }
 
   return (
@@ -64,14 +60,27 @@ const Sender = () => {
           {!messageSent ? (
               <div className="text-white w-[80%] m-auto lg:w-[60%]">
                   <QuickLink toLink="HOME" onClickFunc={() => nav("/")}/>
-                  <h1 className="text-4xl lg:my-2 lg:text-6xl font-semibold tracking-[3px] lg:w-[90%] font-[Montserrat]">Send Text</h1>
+                  <h1 className="text-4xl lg:my-2 lg:text-6xl font-semibold tracking-[3px] lg:w-[90%] font-[Montserrat]">
+                      Send Text
+                  </h1>
                   <TextEditor onChange={setText} />
                   <div className="my-2">
-                      <Buttons onClickFunc={() => checkValidMessage()} ButtonType="Send Message" />
+                      <Buttons onClickFunc={sendMessage} ButtonType="Send Message" />
                   </div>
               </div>
-          ) :
-              <GeneratedCode customFunc={() => setMessageSent(false)} />}
+          ) : (
+              result && (
+                  <GeneratedCode
+                      code={result.code}
+                      expiryAt={new Date(result.expiryAt).toLocaleString("en-US", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                      })}
+                  />
+
+              )
+          )}
+
       </section>
   );
 };

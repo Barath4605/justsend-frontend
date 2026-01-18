@@ -4,12 +4,12 @@ import toast from 'react-hot-toast'
 import {useNavigate} from "react-router-dom";
 import QuickLink from "../QuickLink.jsx";
 
-const GeneratedCode = ({customFunc}) => {
+const GeneratedCode = ({customFunc, code, expiryAt}) => {
 
-    const codeDummy = "C3B2A1";
+    const codeGenerated = {code};
 
     const handleCopy = async () => {
-        await navigator.clipboard.writeText(codeDummy);
+        await navigator.clipboard.writeText(code);
         toast.success("Code Copied!");
     };
 
@@ -26,7 +26,7 @@ const GeneratedCode = ({customFunc}) => {
         <div className="flex w-fit text-center my-5 p-1 items-center font-[IBM_Plex_Mono]">
             <div className="flex">
                 {
-                    [...codeDummy].map((code, index) => (
+                    [...code].map((code, index) => (
 
                         <h1 className="lg:text-6xl text-3xl lg:px-5 lg:py-1 px-3 py-2 lg:mx-2 mx-1 rounded-lg bg-black/30 text-white backdrop-blur-2xl">{code}</h1>
                     ))
@@ -36,7 +36,7 @@ const GeneratedCode = ({customFunc}) => {
                 <Copy onClick={handleCopy} size={24} className="p-1 cursor-pointer text-white" />
             </div>
         </div>
-        <h2 className="text-center mx-4 text-white/70 my-5 lg:text-start">Expires on : 1/20/2026</h2>
+        <h2 className="text-center mx-4 text-white/70 my-5 lg:text-start">Expires on : {expiryAt}</h2>
 
     </section>
   );
