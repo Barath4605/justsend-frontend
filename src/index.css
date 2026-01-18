@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@layer base {
+    html {
+        font-family: "Mulish", "Montserrat", "Roboto Flex", "IBM Plex Mono", system-ui, sans-serif, monospace;
+    }
+}
+/* Root variables */
+/* Root variables */
+:root {
+    --editor-bg: #2f2f2f;
+    --editor-text: #e8e8e8;
+    --toolbar-bg: #2a2a2a;
+    --button-bg: transparent;
+    --button-hover: #3a3a3a;
+    --button-active: #404040;
+    --button-text: #b8b8b8;
+    --border-color: #4a4a4a;
+    --code-bg: #252525;
+    --blockquote-border: #555555;
+}
