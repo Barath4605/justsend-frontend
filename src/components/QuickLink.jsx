@@ -11,7 +11,7 @@ const QuickLink = ({toLink, onClickFunc}) => {
                 type="button"
                 onClick={onClickFunc}
                 className="text-gray-500/50 border-b cursor-pointer border-gray-500/50 hover:text-gray-500
-                   hover:border-gray-500 transition-colors duration-200 ease-in-out"
+                   hover:border-gray-500 transition-colors duration-200 ease-in-out tracking-widest"
             > / {toLink}</button>
         </div>
       </>

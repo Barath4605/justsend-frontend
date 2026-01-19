@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage.jsx";
 import Sender from "./pages/Sender.jsx";
 import {Toaster} from "react-hot-toast";
 import DisplayText from "./components/receiver-components/DisplayText.jsx";
+import Bookmark from "./pages/Bookmark.jsx";
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/send" element={<Sender />} />
                 <Route path="/:code" element={<DisplayText />} />
+                <Route path="/bookmarks" element={<Bookmark />} />
             </Routes>
         </>
     )

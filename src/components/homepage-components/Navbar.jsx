@@ -14,9 +14,9 @@ const Navbar = () => {
                 </div>
             </div>
 
-            <div className="p-1">
+            <button onClick={() => nav("/bookmarks")} className="p-1">
                 <Bookmark size={23} className="stroke-white stroke-[0.8px] hover:fill-white cursor-pointer " />
-            </div>
+            </button>
         </header>
     );
 };
