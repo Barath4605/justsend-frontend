@@ -56,12 +56,12 @@ const Sender = () => {
           <Navbar />
 
           {!messageSent ? (
-              <div className="text-white w-[80%] m-auto lg:w-[60%]">
+              <div className="text-white w-[95%] m-auto lg:w-[60%]">
                   <QuickLink toLink="HOME" onClickFunc={() => nav("/")}/>
                   <h1 className="text-4xl lg:my-2 lg:text-6xl font-semibold tracking-[3px] lg:w-[90%] font-[Montserrat]">
                       Send Text
                   </h1>
-                  <TextEditor onChange={setText} />
+                  <TextEditor onChange={setText}  />
                   <div className="my-5 mb-10">
                       <Buttons onClickFunc={sendMessage} ButtonType="Send Message" />
                   </div>
