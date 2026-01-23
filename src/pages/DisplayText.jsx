@@ -6,7 +6,8 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import "../styles/texteditor.scss"
 import toast from "react-hot-toast";
-import {BookCopy, Bookmark, ClipboardCopy, Copy, CopyCheckIcon, CopyPlus, TextCursor} from "lucide-react"
+import { Bookmark, Copy, CopyCheckIcon } from "lucide-react"
+import BookmarkTitleModal from "../components/bookmarks-components/BookmarkTitleModal.jsx";
 
 
 const DisplayText = () => {
@@ -15,6 +16,26 @@ const DisplayText = () => {
     const nav = useNavigate();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [copy, setCopy] = useState(false);
+    const [bookmark, setBookmark] = useState(false);
+    const [bookmarkModal, setBookmarkModal] = useState(false);
+
+
+    useEffect(() => {
+        if(!copy) return;
+
+        const timer = setTimeout(() => {
+            setCopy(false);
+        },4000)
+        return () => clearTimeout(timer);
+    }, [copy]);
+
+    useEffect(() => {
+        const raw = localStorage.getItem("justsend_bookmark");
+        const saved = raw ? JSON.parse(raw) : [];
+        setBookmark(saved.some(b => b.code === code));
+    }, [code]);
+
 
     useEffect(() => {
         async function fetchDataFromCode() {
@@ -73,10 +94,42 @@ const DisplayText = () => {
         return null;
     }
 
+    // ====================== BOOKMARK ======================
+
+
+    const handleBookmark = (title) => {
+        const raw = localStorage.getItem("justsend_bookmark");
+        const list = raw ? JSON.parse(raw) : [];
+
+        if (list.some(b => b.code === code)) {
+            toast.error("Already bookmarked!");
+            return;
+        }
+
+        list.push({
+            code,
+            title,
+            savedAt: Date.now(),
+        });
+
+        localStorage.setItem("justsend_bookmark", JSON.stringify(list));
+
+        setBookmark(true);
+        setBookmarkModal(false);
+        toast.success("Saved to bookmarks!");
+    };
+
+
+
     return (
         <main className="bg-linear-to-br from-black via-zinc-900 to-zinc-700
                             min-h-screen flex flex-col">
             <Navbar />
+
+            {bookmarkModal && (
+                <BookmarkTitleModal onClose={() => setBookmarkModal(false)}
+                                    onSave={handleBookmark}/>
+            )}
 
             <section className="w-[90%] lg:w-[70%] min-h-150 m-auto text-white">
                 <div className="flex">
@@ -89,22 +142,38 @@ const DisplayText = () => {
                 <div className="tiptap-wrapper relative my-5 mb-10">
                     <div className="flex flex-row-reverse items-center backdrop-contrast-105 backdrop-blur-lg
                                     rounded-lg m-3 lg:mt-3 lg:mx-4 z-10 sticky top-4  w-fit">
-                        <button onClick={
-                            async () => {
-                                await navigator.clipboard.writeText(editor.getText());
-                                toast.success("Text Data Copied!");
-                            }
-                        } className="flex items-center cursor-pointer text-sm text-white/70 p-1 m-1 hover:backdrop-blur-2xl rounded-sm">
-                            <CopyCheckIcon  size="27" className="p-1" />
-                            Copy
+                        <button
+                            onClick={async () => {
+                                if (copy) return
+                                setCopy(true)
+                                await navigator.clipboard.writeText(editor.getText())
+                                toast.success("Text Data Copied!")
+                            }}
+                            className={`
+                                flex items-center text-sm p-1 m-1 rounded-sm
+                                transition-all duration-300 ease-out cursor-pointer
+                                ${copy ? "text-white scale-105" : "text-white/70"}
+                             `}
+                        >
+                            {copy ? (
+                                <>
+                                    <CopyCheckIcon size={27} className="p-1" />
+                                    Copied!
+                                </>
+                            ) : (
+                                <>
+                                    <Copy size={27} className="p-1" />
+                                    Copy
+                                </>
+                            )}
                         </button>
+
 
                         <div className="w-px h-6 bg-gray-200/20"></div>
 
-                        <button disabled  onClick={() => toast.success("Saved to your Bookmarks!")}
-                                 className="flex cursor-pointer items-center text-sm text-white/70 p-1 m-1 hover:backdrop-blur-2xl rounded-sm disabled:cursor-not-allowed disabled:opacity-45">
-                            <Bookmark size="27" className="p-1"
-                            /> Bookmark
+                        <button disabled={bookmark} onClick={() => setBookmarkModal(true)}
+                                className="flex cursor-pointer items-center text-sm text-white/70 p-1 m-1 hover:backdrop-blur-2xl rounded-sm disabled:cursor-not-allowed disabled:opacity-45">
+                            <Bookmark size="23" className={`stroke-white stroke-[0.8px] ${bookmark ? "fill-white" : "fill-transparent"} cursor-pointer`}/> {bookmark ? "Bookmarked!" : "Bookmark"}
                         </button>
                     </div>
 
